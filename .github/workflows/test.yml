@@ -1,0 +1,18 @@
+name: Github Actions Test Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+      runs-on: ubuntu-latest
+      containers:
+          - image: maven:3.9.6-eclipse-temurin-17
+      steps:
+        - uses: actions/checkout@v3
+        - run: mvn clean verify
