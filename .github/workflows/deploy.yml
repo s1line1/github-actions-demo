@@ -1,4 +1,5 @@
-name: Github Actions Demo Deploy
+name: CI/CD shift-left -> main
+run-name: Merage into ${{ github.ref_name }} by ${{ github.actor }}
 
 on:
   push:
