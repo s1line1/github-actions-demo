@@ -1,5 +1,5 @@
 name: CI/CD shift-left -> main
-run-name: Merage into ${{ github.ref_name }} by ${{ github.actor }}
+run-name: shift-left -> main, Merge into ${{ github.ref_name }} by ${{ github.actor }}
 
 on:
   push:
