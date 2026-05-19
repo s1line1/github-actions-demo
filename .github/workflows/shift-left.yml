@@ -17,7 +17,7 @@ env:
   REGISTRY: crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
   NAMESPACE: s1line1-test
   IMAGE: github-actions-demo
-  TAG: ${{ github.sha }}
+  # TAG: ${{ github.sha }}
 
 permissions:
   contents: read
