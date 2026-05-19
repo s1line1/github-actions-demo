@@ -1,9 +1,6 @@
 name: Github Actions Test Project
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -21,6 +18,7 @@ permissions:
 
 jobs:
   test:
+    name: Run Unit Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,33 +36,45 @@ jobs:
           docker run --rm \
             springboot-test:${{ github.sha }} \
             bash cicd/run-test.sh
-          
-      # 1.1 Login to ACR
-      - name: Login to ACR
-        run: |
-          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
-              -u 个人云数据 \
-              --password-stdin \
-              crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
 
-      # 1.2 Set tag
-      - name: Set image tag
-        id: set-tag
+  calculate:
+    name: Calculate Tag
+    outputs:
+      image_tag: ${{ steps.calculate-tag.outputs.tag }}
+    steps:
+      - name: Calculate tag
+        id: calculate-tag
         run: |
           echo "TAG=$(echo -n '${{ github.sha }}' | sha256sum | cut -d' ' -f1 | head -c 8)" >> "$GITHUB_OUTPUT"
+      - run: |
+          echo "build image $TAG"
+
+  build:
+    name:  Build image and push
+    needs: calculate
+    runs-on: ubuntu-latest
+    steps:
+      # 1.1 Login to ACR
+        - name: Login to ACR
+          run: |
+            echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+                -u 个人云数据 \
+                --password-stdin \
+                crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
 
       # 1.3 Build and push image to ACR
-      - name: Build and push image to ACR
-        run: |
-          docker build --tag "$REGISTRY/$NAMESPACE/$IMAGE:${{ steps.set-tag.outputs.TAG }}" .
-          docker push "$REGISTRY/$NAMESPACE/$IMAGE:${{ steps.set-tag.outputs.TAG }}"
+        - name: Build and push image to ACR
+          run: |
+            docker build --tag "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.build.outputs.image_tag }}" .
+            docker push "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.build.outputs.image_tag }}"
 
+  scan:
+    name: Scan image in ACR
       # 1.4 Scan image in ACR
-      - name: Scan image in ACR
-        uses: aliyun/acr-scan@v1
-        with:
-          region-id: "${{ env.REGION_ID }}"
-          access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
-          access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
-          repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
-          tag: ${{ steps.set-tag.outputs.TAG }}
+    uses: aliyun/acr-scan@v1
+    with:
+      region-id: "${{ env.REGION_ID }}"
+      access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
+      access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
+      repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
+      tag: ${{ steps.set-tag.outputs.TAG }}
