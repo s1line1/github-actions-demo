@@ -60,7 +60,7 @@ jobs:
       
       - name: echo tag
         run: |
-          echo "build image $TAG"
+          echo "build image with tag: ${{ steps.calculate-tag.outputs.tag }}"
 
       - name: Upload tag
         uses: actions/upload-artifact@v4
