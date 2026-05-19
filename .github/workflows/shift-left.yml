@@ -39,6 +39,7 @@ jobs:
 
   calculate:
     name: Calculate Tag
+    runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.calculate-tag.outputs.tag }}
     steps:
@@ -50,31 +51,38 @@ jobs:
           echo "build image $TAG"
 
   build:
-    name:  Build image and push
+    name: Build image and push
     needs: calculate
     runs-on: ubuntu-latest
     steps:
       # 1.1 Login to ACR
-        - name: Login to ACR
-          run: |
-            echo "${{ secrets.ACR_PASSWORD }}" | docker login \
-                -u 个人云数据 \
-                --password-stdin \
-                crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
+      - name: Login to ACR
+        run: |
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+              -u 个人云数据 \
+              --password-stdin \
+              crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
+
+      # 1.2 Checkout
+      - uses: actions/checkout@v4
 
       # 1.3 Build and push image to ACR
-        - name: Build and push image to ACR
-          run: |
-            docker build --tag "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.build.outputs.image_tag }}" .
-            docker push "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.build.outputs.image_tag }}"
+      - name: Build and push image to ACR
+        run: |
+          docker build --tag "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.calculate.outputs.image_tag }}" .
+          docker push "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.calculate.outputs.image_tag }}"
 
   scan:
     name: Scan image in ACR
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       # 1.4 Scan image in ACR
-    uses: aliyun/acr-scan@v1
-    with:
-      region-id: "${{ env.REGION_ID }}"
-      access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
-      access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
-      repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
-      tag: ${{ needs.build.outputs.image_tag }}
+      - name: Scan image in ACR
+        uses: aliyun/acr-scan@v1
+        with:
+          region-id: "${{ env.REGION_ID }}"
+          access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
+          access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
+          repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
+          tag: ${{ needs.calculate.outputs.image_tag }}
