@@ -1,7 +1,6 @@
 name: Shift Left
 run-name: >-
-  ${{ github.event_name == 'push' && format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) ||
-     'Shift Left' }}
+  ${{ github.event_name == 'push' && format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) }}
 
 on:
   push:
@@ -25,7 +24,7 @@ permissions:
 jobs:
   test:
     name: Run Unit Test
-    if: ${{ github.event_name == 'pull_request' }}
+    # if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,10 +53,14 @@ jobs:
       - name: Calculate tag
         id: calculate-tag
         run: |
-          echo "TAG=$(echo -n '${{ github.sha }}' | sha256sum | cut -d' ' -f1 | head -c 8)" >> "$GITHUB_OUTPUT"
+          TAG=$(echo -n '${{ github.sha }}' | sha256sum | cut -d' ' -f1 | head -c 8)
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo $TAG > image_tag.txt
-      - run: |
+      
+      - name: echo tag
+        run: |
           echo "build image $TAG"
+
       - name: Upload tag
         uses: actions/upload-artifact@v4
         with:
