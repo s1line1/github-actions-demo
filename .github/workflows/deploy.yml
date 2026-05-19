@@ -1,5 +1,5 @@
 name: Deploy
-run-name: ${{ github.event_name == 'push' && format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) }}
+run-name: ${{ format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) }}
 
 on:
   workflow_run:
@@ -9,25 +9,42 @@ on:
     branches:
       - main
 
+env:
+  REGION_ID: cn-shanghai
+  REGISTRY: crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
+  NAMESPACE: s1line1-test
+  IMAGE: github-actions-demo
+
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Download image tag
-        uses: actions/download-artifact@v4
-        with:
-          name: image-tag
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Read tag
-        id: tag
+      - name: Install aliyun CLI
         run: |
-          TAG=$(cat image_tag.txt)
-          echo "tag: $TAG"
+          curl -sSLo aliyun.tgz https://aliyun-cli.oss-cn-hangzhou.aliyuncs.com/aliyun-cli-linux-latest-amd64.tgz
+          tar -xzf aliyun.tgz
+          sudo mv aliyun /usr/local/bin/
+
+      - name: Get latest tag from ACR
+        id: tag
+        env:
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
+          REGION_ID: ${{ env.REGION_ID }}
+          NAMESPACE: ${{ env.NAMESPACE }}
+          IMAGE: ${{ env.IMAGE }}
+        run: |
+          aliyun configure set --profile default \
+            --access-key-id "$ACCESS_KEY_ID" \
+            --access-key-secret "$ACCESS_KEY_SECRET" \
+            --region "$REGION_ID"
+          TAG=$(aliyun cr ListRepositoryTag \
+            --RepoNamespace "$NAMESPACE" \
+            --RepoName "$IMAGE" | jq -r '.data.tags[0].tag')
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+          echo "tag: $TAG"
 
       - name: Deploy
         run: |
