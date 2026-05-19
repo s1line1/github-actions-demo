@@ -55,8 +55,8 @@ jobs:
         id: calculate-tag
         run: |
           TAG=$(echo -n '${{ github.sha }}' | sha256sum | cut -d' ' -f1 | head -c 8)
-          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-          echo $TAG > image_tag.txt
+          echo "TAG=${{ github.event.number }}_$TAG" >> "$GITHUB_OUTPUT"
+          echo "${{ github.event.number }}_$TAG" > image_tag.txt
       
       - name: echo tag
         run: |
