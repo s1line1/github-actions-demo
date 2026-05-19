@@ -1,7 +1,7 @@
 name: Shift Left
 run-name: >-
-  ${{ github.event_name == 'push' && 'CI Shift-left -> main, Merge into ${{ github.ref_name }} by ${{ github.actor }}' ||
-     format('Shift Left') }}
+  ${{ github.event_name == 'push' && format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) ||
+     'Shift Left' }}
 
 on:
   push:
