@@ -17,53 +17,36 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Install aliyun CLI
+      - name: Login to ACR
         run: |
-          set -euo pipefail
-
-          curl -sSLo aliyun.tgz \
-            https://aliyun-cli.oss-cn-hangzhou.aliyuncs.com/aliyun-cli-linux-latest-amd64.tgz
-
-          tar -xzf aliyun.tgz
-
-          sudo mv aliyun /usr/local/bin/
-
-          aliyun version
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            -u 个人云数据 \
+            --password-stdin \
+            "${{ env.REGISTRY }}"
 
       - name: Get latest tag from ACR
         id: tag
         env:
-          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-          ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
-          REGION_ID: ${{ env.REGION_ID }}
+          REGISTRY: ${{ env.REGISTRY }}
           NAMESPACE: ${{ env.NAMESPACE }}
           IMAGE: ${{ env.IMAGE }}
         run: |
           set -euo pipefail
 
-          aliyun configure set --profile default \
-            --access-key-id "$ACCESS_KEY_ID" \
-            --access-key-secret "$ACCESS_KEY_SECRET" \
-            --region "$REGION_ID"
+          AUTH_HEADER=$(curl -sI "https://$REGISTRY/v2/" | grep -i "www-authenticate")
+          REALM=$(echo "$AUTH_HEADER" | grep -oP 'realm="\K[^"]+')
+          SERVICE=$(echo "$AUTH_HEADER" | grep -oP 'service="\K[^"]+')
 
-          echo "namespace=$NAMESPACE"
-          echo "image=$IMAGE"
-        
-          RESULT=$(
-            aliyun cr GET /repository/$NAMESPACE/$IMAGE/tags
-          )
+          SCOPE="repository:$NAMESPACE/$IMAGE:pull"
+          TOKEN=$(curl -sS -u "个人云数据:${{ secrets.ACR_PASSWORD }}" \
+            "${REALM}?service=${SERVICE}&scope=${SCOPE}" | jq -r '.token // .access_token')
 
-          echo "$RESULT"
+          TAGS_JSON=$(curl -sS -H "Authorization: Bearer $TOKEN" \
+            "https://$REGISTRY/v2/$NAMESPACE/$IMAGE/tags/list")
 
-          TAG=$(
-            echo "$RESULT" \
-            | jq -r '
-                .data.tags
-                | sort_by(.imageUpdate)
-                | last
-                | .tag
-              '
-          )
+          echo "$TAGS_JSON"
+
+          TAG=$(echo "$TAGS_JSON" | jq -r '.tags | sort_by(. | split("_")[0] | tonumber) | last')
 
           if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
             echo "failed to get tag"
@@ -71,7 +54,6 @@ jobs:
           fi
 
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-
           echo "tag=$TAG"
 
       - name: Deploy
