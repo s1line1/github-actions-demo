@@ -109,7 +109,6 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: calculate
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     steps:
