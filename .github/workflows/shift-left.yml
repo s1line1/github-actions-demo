@@ -1,6 +1,9 @@
 name: Shift Left
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -19,6 +22,7 @@ permissions:
 jobs:
   test:
     name: Run Unit Test
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,7 +44,7 @@ jobs:
   calculate:
     name: Calculate Tag
     needs: test
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.calculate-tag.outputs.tag }}
@@ -61,6 +65,7 @@ jobs:
   build:
     name: Build image and push
     needs: calculate
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       # 1.1 Login to ACR
@@ -83,6 +88,7 @@ jobs:
   scan:
     name: Scan image in ACR
     needs: calculate
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       # 1.4 Scan image in ACR
