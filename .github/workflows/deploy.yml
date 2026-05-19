@@ -6,8 +6,6 @@ on:
     workflows: ["Shift Left"]
     types:
       - completed
-    branches:
-      - main
 
 env:
   REGION_ID: cn-shanghai
@@ -19,7 +17,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
     steps:
       - name: Install aliyun CLI
         run: |
