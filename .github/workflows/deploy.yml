@@ -36,8 +36,10 @@ jobs:
             --access-key-id "$ACCESS_KEY_ID" \
             --access-key-secret "$ACCESS_KEY_SECRET" \
             --region "$REGION_ID"
-          TAG=$(aliyun cr GET /repos/$NAMESPACE/$IMAGE/tags \
-            | jq -r '.data.tags[0].tag')
+          TAG=$( aliyun cr GetRepoTags \
+              --RepoNamespace "$NAMESPACE" \
+              --RepoName "$IMAGE" \
+              | jq -r '.data.tags[0].tag')
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "tag: $TAG"
 
