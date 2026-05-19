@@ -39,6 +39,7 @@ jobs:
 
   calculate:
     name: Calculate Tag
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.calculate-tag.outputs.tag }}
@@ -80,7 +81,7 @@ jobs:
 
   scan:
     name: Scan image in ACR
-    needs: build
+    needs: calculate-tag
     runs-on: ubuntu-latest
     steps:
       # 1.4 Scan image in ACR
