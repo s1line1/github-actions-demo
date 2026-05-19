@@ -44,8 +44,7 @@ jobs:
           aliyun configure set --profile default \
             --access-key-id "$ACCESS_KEY_ID" \
             --access-key-secret "$ACCESS_KEY_SECRET" \
-            --region "$REGION_ID" \
-            --output json
+            --region "$REGION_ID"
 
           echo "namespace=$NAMESPACE"
           echo "image=$IMAGE"
