@@ -1,4 +1,4 @@
-name: Deploy
+name: CD
 run-name: ${{ format('PR {0} CI Shift-left -> main, Merge into {1} by {2}',github.event.number, github.ref_name, github.actor) }}
 
 on:
