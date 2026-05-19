@@ -18,6 +18,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          name: image-tag
+
+      - name: Read tag
+        run: |
+          TAG=$(cat image_tag.txt)
+          echo "TAG=$TAG"
+
       - name: Deploy
         run: |
-          echo "Deploying application..."
+          echo "deploy image:$TAG"
