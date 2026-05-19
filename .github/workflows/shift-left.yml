@@ -74,7 +74,7 @@ jobs:
 
   scan:
     name: Scan image in ACR
-    needs: build
+    needs: calculate
     runs-on: ubuntu-latest
     steps:
       # 1.4 Scan image in ACR
