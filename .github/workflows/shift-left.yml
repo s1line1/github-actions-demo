@@ -77,4 +77,4 @@ jobs:
       access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
       access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
       repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
-      tag: ${{ steps.set-tag.outputs.TAG }}
+      tag: ${{ needs.build.outputs.image_tag }}
