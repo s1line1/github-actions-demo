@@ -45,7 +45,7 @@ jobs:
           echo "${{ secrets.ACR_PASSWORD }}" | docker login \
               -u 个人云数据 \
               --password-stdin \
-              ${REGISTRY}
+              crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
 
       # 1.2 Set tag
       - name: Set image tag
