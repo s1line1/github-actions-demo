@@ -11,8 +11,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container:
-        image: maven:3.9.6-eclipse-temurin-17
     steps:
-      - uses: actions/checkout@v3
-      - run: mvn clean verify
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build test image
+        run: |
+          docker build \
+            -f Dockerfile.test \
+            -t springboot-test:${{ github.sha }} \
+            .
+
+      - name: Run mvn clean verify
+        run: |
+          docker run --rm \
+            springboot-test:${{ github.sha }} \
+            bash cicd/run-test.sh
