@@ -44,7 +44,7 @@ jobs:
   calculate:
     name: Calculate Tag
     needs: test
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.calculate-tag.outputs.tag }}
