@@ -1,5 +1,5 @@
 name: Deploy
-run-name: ${{ format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) }}
+run-name: ${{ format('PR {0} CI Shift-left -> main, Merge into {1} by {2}',github.event.number, github.ref_name, github.actor) }}
 
 on:
   workflow_run:

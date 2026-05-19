@@ -106,22 +106,3 @@ jobs:
           access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
           repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
           tag: ${{ needs.calculate.outputs.image_tag }}
-
-  # deploy:
-  #   name: Deploy
-  #   runs-on: ubuntu-latest
-  #   if: ${{ github.event_name == 'push' }}
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-
-  #     - name: Calculate tag
-  #       id: tag
-  #       run: |
-  #         TAG=$(echo -n '${{ github.sha }}' | sha256sum | cut -d' ' -f1 | head -c 8)
-  #         echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-  #         echo "tag: $TAG"
-
-  #     - name: Deploy
-  #       run: |
-  #         echo "deploy image:${{ steps.tag.outputs.TAG }}"
