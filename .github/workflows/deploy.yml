@@ -19,9 +19,16 @@ jobs:
     steps:
       - name: Install aliyun CLI
         run: |
-          curl -sSLo aliyun.tgz https://aliyun-cli.oss-cn-hangzhou.aliyuncs.com/aliyun-cli-linux-latest-amd64.tgz
+          set -euo pipefail
+
+          curl -sSLo aliyun.tgz \
+            https://aliyun-cli.oss-cn-hangzhou.aliyuncs.com/aliyun-cli-linux-latest-amd64.tgz
+
           tar -xzf aliyun.tgz
+
           sudo mv aliyun /usr/local/bin/
+
+          aliyun version
 
       - name: Get latest tag from ACR
         id: tag
@@ -32,16 +39,41 @@ jobs:
           NAMESPACE: ${{ env.NAMESPACE }}
           IMAGE: ${{ env.IMAGE }}
         run: |
+          set -euo pipefail
+
           aliyun configure set --profile default \
             --access-key-id "$ACCESS_KEY_ID" \
             --access-key-secret "$ACCESS_KEY_SECRET" \
-            --region "$REGION_ID"
-          TAG=$( aliyun cr GetRepoTags \
-              --RepoNamespace "$NAMESPACE" \
-              --RepoName "$IMAGE" \
-              | jq -r '.data.tags[0].tag')
+            --region "$REGION_ID" \
+            --output json
+
+          echo "namespace=$NAMESPACE"
+          echo "image=$IMAGE"
+        
+          RESULT=$(
+            aliyun cr GET /repository/$NAMESPACE/$IMAGE/tags
+          )
+
+          echo "$RESULT"
+
+          TAG=$(
+            echo "$RESULT" \
+            | jq -r '
+                .data.tags
+                | sort_by(.imageUpdate)
+                | last
+                | .tag
+              '
+          )
+
+          if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
+            echo "failed to get tag"
+            exit 1
+          fi
+
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-          echo "tag: $TAG"
+
+          echo "tag=$TAG"
 
       - name: Deploy
         run: |
