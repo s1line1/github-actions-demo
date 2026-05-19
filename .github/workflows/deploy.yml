@@ -1,0 +1,23 @@
+name: Github Actions Demo Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_run:
+    workflows: ["Shift Left"]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy
+        run: |
+          echo "Deploying application..."
