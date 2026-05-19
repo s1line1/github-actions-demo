@@ -8,6 +8,7 @@ class GithubActionsDemoApplicationTests {
 
     @Test
     void contextLoads() {
+        System.out.println("Testing");
     }
 
 }
