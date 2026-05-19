@@ -1,7 +1,7 @@
 name: Shift Left
 run-name: >-
-  ${{ github.event_name == 'push' && format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) ||
-    github.event_name == 'pull_request' && format('PR #{0} {1} by {2}', github.event.number, github.event.pull_request.title, github.actor) }}
+  ${{ github.event_name == 'pull_request' && format('PR #{0} {1} by {2}', github.event.number, github.event.pull_request.title, github.actor) }}
+
 
 on:
   push:
@@ -107,26 +107,21 @@ jobs:
           repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
           tag: ${{ needs.calculate.outputs.image_tag }}
 
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # deploy:
+  #   name: Deploy
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event_name == 'push' }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Download image tag
-        uses: actions/download-artifact@v4
-        with:
-          name: image-tag
+  #     - name: Calculate tag
+  #       id: tag
+  #       run: |
+  #         TAG=$(echo -n '${{ github.sha }}' | sha256sum | cut -d' ' -f1 | head -c 8)
+  #         echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+  #         echo "tag: $TAG"
 
-      - name: Read tag
-        id: tag
-        run: |
-          TAG=$(cat image_tag.txt)
-          echo "tag: $TAG"
-          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy
-        run: |
-          echo "deploy image:${{ steps.tag.outputs.TAG }}"
+  #     - name: Deploy
+  #       run: |
+  #         echo "deploy image:${{ steps.tag.outputs.TAG }}"

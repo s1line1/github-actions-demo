@@ -1,0 +1,34 @@
+name: Deploy
+run-name: ${{ github.event_name == 'push' && format('CI Shift-left -> main, Merge into {0} by {1}', github.ref_name, github.actor) }}
+
+on:
+  workflow_run:
+    workflows: ["Shift Left"]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Download image tag
+        uses: actions/download-artifact@v4
+        with:
+          name: image-tag
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read tag
+        id: tag
+        run: |
+          TAG=$(cat image_tag.txt)
+          echo "tag: $TAG"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy
+        run: |
+          echo "deploy image:${{ steps.tag.outputs.TAG }}"
