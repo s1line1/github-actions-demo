@@ -125,6 +125,7 @@ jobs:
         id: tag
         run: |
           TAG=$(cat image_tag.txt)
+          echo "tag: $TAG"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Deploy
