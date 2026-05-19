@@ -122,10 +122,11 @@ jobs:
           name: image-tag
 
       - name: Read tag
+        id: tag
         run: |
           TAG=$(cat image_tag.txt)
-          echo "TAG=$TAG"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Deploy
         run: |
-          echo "deploy image:$TAG"
+          echo "deploy image:${{ steps.tag.outputs.TAG }}"
