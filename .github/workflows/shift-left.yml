@@ -105,6 +105,7 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: calculate
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     steps:
@@ -115,8 +116,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-tag
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Read tag
         run: |
