@@ -1,4 +1,4 @@
----
+
 - name: Pull image
   # tags: [pull]
   shell: |
@@ -7,11 +7,16 @@
 - name: Stop old container
   # tags: [stop]
   shell: |
-    OLD_IMAGE=$(docker inspect -f {% raw %}'{{.Image}}'{% endraw %} demo-app 2>/dev/null || true)
     docker rm -f demo-app || true
-    if [ -n "$OLD_IMAGE" ]; then
-      docker rmi "$OLD_IMAGE" || true
-    fi
+
+- name: Clean old images
+  # tags: [clean]
+  shell: |
+    docker images \
+      | grep "{{ repo_namespace }}/{{ repo_image }}" \
+      | grep -v "{{ tag }}" \
+      | awk '{print $3}' \
+      | xargs -r docker rmi 2>/dev/null || true
 
 - name: Run new container
   # tags: [start]
