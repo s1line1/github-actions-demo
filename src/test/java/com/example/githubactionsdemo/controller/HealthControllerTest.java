@@ -18,6 +18,6 @@ public class HealthControllerTest {
     void healthEndpointReturnsOk() throws Exception {
         mockMvc.perform(get("/health"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("OK"));
+                .andExpect(content().string("OKOKOK"));
     }
 }
