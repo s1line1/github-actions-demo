@@ -10,7 +10,7 @@
     docker images \
       | grep "{{ repo_namespace }}/{{ repo_image }}" \
       | grep -v "{{ tag }}" \
-      | awk '{print $3}' \
+      | awk '{print $2}' \
       | xargs -r docker rmi 2>/dev/null || true
 
 - name: Pull image
