@@ -1,9 +1,4 @@
 
-- name: Pull image
-  # tags: [pull]
-  shell: |
-    docker pull {{ registry }}/{{ repo_namespace }}/{{ repo_image }}:{{ tag }}
-
 - name: Stop old container
   # tags: [stop]
   shell: |
@@ -17,6 +12,11 @@
       | grep -v "{{ tag }}" \
       | awk '{print $3}' \
       | xargs -r docker rmi 2>/dev/null || true
+
+- name: Pull image
+  # tags: [pull]
+  shell: |
+    docker pull {{ registry }}/{{ repo_namespace }}/{{ repo_image }}:{{ tag }}
 
 - name: Run new container
   # tags: [start]
