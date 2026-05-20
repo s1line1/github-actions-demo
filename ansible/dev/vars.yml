@@ -1,3 +1,3 @@
-# registry: "{{ lookup('env', 'REGISTRY') }}"
-# repo_namespace: "{{ lookup('env', 'NAMESPACE') }}"
-# repo_image: "{{ lookup('env', 'IMAGE') }}"
+registry: "{{ lookup('env', 'REGISTRY') }}"
+repo_namespace: "{{ lookup('env', 'NAMESPACE') }}"
+repo_image: "{{ lookup('env', 'IMAGE') }}"

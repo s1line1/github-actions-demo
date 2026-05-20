@@ -6,9 +6,6 @@
     - vars.yml
 
   vars:
-    # registry: "{{ lookup('env', 'REGISTRY') }}"
-    # repo_namespace: "{{ lookup('env', 'NAMESPACE') }}"
-    # repo_image: "{{ lookup('env', 'IMAGE') }}"
     tag: "{{ lookup('env', 'TAG') }}"
     acr_password: "{{ lookup('env', 'ACR_PASSWORD') }}"
 
