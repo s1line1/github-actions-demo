@@ -19,6 +19,13 @@ jobs:
     outputs:
       image_tag: ${{ steps.get-tag.outputs.tag }}
     steps:
+      - name: Login to ACR
+        run: |
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
+            -u 个人云数据 \
+            --password-stdin \
+            "${{ env.REGISTRY }}"
+            
       - name: Get latest tag from ACR
         id: get-tag
         env:
