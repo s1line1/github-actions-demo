@@ -1,0 +1,8 @@
+---
+- name: Login to ACR
+  # tags: [auth]
+  shell: |
+    echo "{{ acr_password }}" | docker login \
+      -u 个人云数据 \
+      --password-stdin \
+      {{ registry }}

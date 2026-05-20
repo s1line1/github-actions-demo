@@ -1,0 +1,23 @@
+---
+- name: Pull image
+  # tags: [pull]
+  shell: |
+    docker pull {{ registry }}/{{ repo_namespace }}/{{ repo_image }}:{{ tag }}
+
+- name: Stop old container
+  # tags: [stop]
+  shell: |
+    OLD_IMAGE=$(docker inspect --format='{{.Image}}' demo-app 2>/dev/null || true)
+    docker rm -f demo-app || true
+    if [ -n "$OLD_IMAGE" ]; then
+      docker rmi "$OLD_IMAGE" || true
+    fi
+
+- name: Run new container
+  # tags: [start]
+  shell: |
+    docker run -d \
+      --name demo-app \
+      --restart always \
+      -p 8080:8080 \
+      {{ registry }}/{{ repo_namespace }}/{{ repo_image }}:{{ tag }}
