@@ -1,3 +1,3 @@
-registry: "{{ lookup('env', 'REGISTRY') }}"
-repo_namespace: "{{ lookup('env', 'NAMESPACE') }}"
-repo_image: "{{ lookup('env', 'IMAGE') }}"
+registry: crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
+repo_namespace: s1line1-test
+repo_image: github-actions-demo
