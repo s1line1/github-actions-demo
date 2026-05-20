@@ -1,0 +1,33 @@
+- hosts: dev
+  become: yes
+
+  vars:
+    registry: "{{ lookup('env', 'REGISTRY') }}"
+    namespace: "{{ lookup('env', 'NAMESPACE') }}"
+    image: "{{ lookup('env', 'IMAGE') }}"
+    tag: "{{ lookup('env', 'TAG') }}"
+    acr_password: "{{ lookup('env', 'ACR_PASSWORD') }}"
+
+  tasks:
+    - name: Login to ACR
+      shell: |
+        echo "{{ acr_password }}" | docker login \
+          -u 个人云数据 \
+          --password-stdin \
+          {{ registry }}
+
+    - name: Pull image
+      shell: |
+        docker pull {{ registry }}/{{ namespace }}/{{ image }}:{{ tag }}
+
+    - name: Stop old container
+      shell: |
+        docker rm -f demo-app || true
+
+    - name: Run new container
+      shell: |
+        docker run -d \
+          --name demo-app \
+          --restart always \
+          -p 8080:8080 \
+          {{ registry }}/{{ namespace }}/{{ image }}:{{ tag }}

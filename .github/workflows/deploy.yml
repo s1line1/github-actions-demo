@@ -61,47 +61,49 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: check_image_tag
+    env:
+      TAG: ${{ needs.check_image_tag.outputs.image_tag }}
     runs-on: ubuntu-latest
-    steps:
-      - name: Login to ACR
-        run: |
-          echo "${{ secrets.ACR_PASSWORD }}" | docker login \
-            -u 个人云数据 \
-            --password-stdin \
-            "${{ env.REGISTRY }}"
 
-      - name: Get latest tag from ACR
-        id: tag
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+      
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          cat >> ~/.ssh/config <<EOF
+          Host dev-server
+            HostName ${{ secrets.SERVER_HOST }}
+            User ${{ secrets.SERVER_USER }}
+            IdentityFile ~/.ssh/id_rsa
+            StrictHostKeyChecking no
+          EOF
+
+      - name: Setup inventory
+        run: |
+          cat > ansible/inventory.ini <<EOF
+          [dev]
+          dev-server
+          EOF
+
+      - name: Deploy with Ansible
         env:
           REGISTRY: ${{ env.REGISTRY }}
           NAMESPACE: ${{ env.NAMESPACE }}
           IMAGE: ${{ env.IMAGE }}
+          TAG: ${{ needs.check_image_tag.outputs.image_tag }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
-          set -euo pipefail
-
-          AUTH_HEADER=$(curl -sI "https://$REGISTRY/v2/" | grep -i "www-authenticate")
-          REALM=$(echo "$AUTH_HEADER" | grep -oP 'realm="\K[^"]+')
-          SERVICE=$(echo "$AUTH_HEADER" | grep -oP 'service="\K[^"]+')
-
-          SCOPE="repository:$NAMESPACE/$IMAGE:pull"
-          TOKEN=$(curl -sS -u "个人云数据:${{ secrets.ACR_PASSWORD }}" \
-            "${REALM}?service=${SERVICE}&scope=${SCOPE}" | jq -r '.token // .access_token')
-
-          TAGS_JSON=$(curl -sS -H "Authorization: Bearer $TOKEN" \
-            "https://$REGISTRY/v2/$NAMESPACE/$IMAGE/tags/list")
-
-          echo "$TAGS_JSON"
-
-          TAG=$(echo "$TAGS_JSON" | jq -r '.tags | sort_by(. | split("_")[0] | tonumber) | last')
-
-          if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-            echo "failed to get tag"
-            exit 1
-          fi
-
-          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG"
-
-      - name: Deploy
-        run: |
-          echo "deploy image:${{ steps.tag.outputs.TAG }}"
+          ansible-playbook \
+            -i ansible/inventory.ini \
+            ansible/dev/deploy.yml
