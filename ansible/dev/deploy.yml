@@ -3,8 +3,8 @@
 
   vars:
     registry: "{{ lookup('env', 'REGISTRY') }}"
-    namespace: "{{ lookup('env', 'NAMESPACE') }}"
-    image: "{{ lookup('env', 'IMAGE') }}"
+    repo_namespace: "{{ lookup('env', 'NAMESPACE') }}"
+    repo_image: "{{ lookup('env', 'IMAGE') }}"
     tag: "{{ lookup('env', 'TAG') }}"
     acr_password: "{{ lookup('env', 'ACR_PASSWORD') }}"
 
@@ -18,7 +18,7 @@
 
     - name: Pull image
       shell: |
-        docker pull {{ registry }}/{{ namespace }}/{{ image }}:{{ tag }}
+        docker pull {{ registry }}/{{ repo_namespace }}/{{ repo_image }}:{{ tag }}
 
     - name: Stop old container
       shell: |
@@ -30,4 +30,4 @@
           --name demo-app \
           --restart always \
           -p 8080:8080 \
-          {{ registry }}/{{ namespace }}/{{ image }}:{{ tag }}
+          {{ registry }}/{{ repo_namespace }}/{{ repo_image }}:{{ tag }}
