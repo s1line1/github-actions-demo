@@ -131,6 +131,7 @@ jobs:
   deploy:
     name: Deploy
     needs: unit_test
+    if: ${{ needs.unit_test.result == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
