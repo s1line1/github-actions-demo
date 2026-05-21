@@ -10,11 +10,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow.
 env:
-  # REGION_ID: cn-shanghai
-  # REGISTRY: crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
-  # NAMESPACE: s1line1-test
   IMAGE: github-actions-demo
-  # TAG: ${{ github.sha }}
 
 permissions:
   contents: read
@@ -98,7 +94,7 @@ jobs:
       - name: Scan image in ACR
         uses: aliyun/acr-scan@v1
         with:
-          region-id: "${{ secrets.ALIYUN_REGISTRY_REGION }}"
+          region-id: "${{ secrets.ALIYUN_REGION_ID }}"
           access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
           access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
           repository: "${{ secrets.ALIYUN_NAMESPACE }}/${{ env.IMAGE }}"
