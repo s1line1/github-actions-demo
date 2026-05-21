@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  unit_test:
     name: Run Unit Test
     # if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
@@ -90,7 +90,7 @@ jobs:
 
   scan:
     name: Scan image in ACR
-    needs: calculate
+    needs: [unit_test, calculate, build]
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
