@@ -13,9 +13,8 @@ env:
   IMAGE: github-actions-demo
 
 jobs:
-  test:
+  unit_test:
     name: Run Unit Test
-    # if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -131,6 +130,7 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: unit_test
     runs-on: ubuntu-latest
 
     steps:
