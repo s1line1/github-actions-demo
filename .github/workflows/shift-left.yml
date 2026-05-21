@@ -10,9 +10,9 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow.
 env:
-  REGION_ID: cn-shanghai
-  REGISTRY: crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
-  NAMESPACE: s1line1-test
+  # REGION_ID: cn-shanghai
+  # REGISTRY: crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
+  # NAMESPACE: s1line1-test
   IMAGE: github-actions-demo
   # TAG: ${{ github.sha }}
 
@@ -75,9 +75,9 @@ jobs:
       - name: Login to ACR
         run: |
           echo "${{ secrets.ACR_PASSWORD }}" | docker login \
-              -u 个人云数据 \
+              -u ${{ secrets.ALIYUN_REGISTRY_USER }} \
               --password-stdin \
-              crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
+              ${{ secrets.ALIYUN_REGISTRY }}
 
       # 1.2 Checkout
       - uses: actions/checkout@v4
@@ -85,8 +85,8 @@ jobs:
       # 1.3 Build and push image to ACR
       - name: Build and push image to ACR
         run: |
-          docker build --tag "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.calculate.outputs.image_tag }}" .
-          docker push "$REGISTRY/$NAMESPACE/$IMAGE:${{ needs.calculate.outputs.image_tag }}"
+          docker build --tag "${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAMESPACE }}/$IMAGE:${{ needs.calculate.outputs.image_tag }}" .
+          docker push "${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAMESPACE }}/$IMAGE:${{ needs.calculate.outputs.image_tag }}"
 
   scan:
     name: Scan image in ACR
@@ -98,8 +98,8 @@ jobs:
       - name: Scan image in ACR
         uses: aliyun/acr-scan@v1
         with:
-          region-id: "${{ env.REGION_ID }}"
+          region-id: "${{ secrets.ALIYUN_REGISTRY_REGION }}"
           access-key-id: "${{ secrets.ACCESS_KEY_ID }}"
           access-key-secret: "${{ secrets.ACCESS_KEY_SECRET }}"
-          repository: "${{ env.NAMESPACE }}/${{ env.IMAGE }}"
+          repository: "${{ secrets.ALIYUN_NAMESPACE }}/${{ env.IMAGE }}"
           tag: ${{ needs.calculate.outputs.image_tag }}
