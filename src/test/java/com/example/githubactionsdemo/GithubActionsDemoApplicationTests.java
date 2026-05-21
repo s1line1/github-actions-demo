@@ -1,0 +1,14 @@
+package com.example.githubactionsdemo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class GithubActionsDemoApplicationTests {
+
+    @Test
+    void contextLoads() {
+        System.out.println("Testing");
+    }
+
+}
