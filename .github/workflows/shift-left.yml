@@ -2,7 +2,6 @@ name: CI:Shift Left
 run-name: >-
   ${{ github.event_name == 'pull_request' && format('PR #{0} {1} by {2}', github.event.number, github.event.pull_request.title, github.actor) }}
 
-
 on:
   pull_request:
     branches:
