@@ -62,5 +62,5 @@ jobs:
       - name: Deploy with Ansible
         run: |
           cd ansible-playbook && \
-          ansible-playbook -i github-actions-demo/inventory.ini github-actions-demo/deploy.yml \
+          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i github-actions-demo/inventory.ini github-actions-demo/deploy.yml \
           -e "env=dev acr_password=${{ secrets.ACR_PASSWORD }}" --private-key ~/.ssh/id_rsa -u root
