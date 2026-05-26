@@ -55,7 +55,7 @@ jobs:
           ALICLOUD_ACCESS_KEY: ${{ secrets.ALICLOUD_ACCESS_KEY }}
           ALICLOUD_SECRET_KEY: ${{ secrets.ALICLOUD_SECRET_KEY }}
         run: |
-          cd tf-config
+          cd tf-config/projects/github-actions-demo
           terraform init
           ECS_IPS=$(terraform output -json public_ips 2>/dev/null || echo "")
           if [ -n "$ECS_IPS" ]; then
