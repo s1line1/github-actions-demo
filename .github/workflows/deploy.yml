@@ -57,10 +57,10 @@ jobs:
           ECS_IP=$(terraform output -raw test_ecs_public_ip 2>/dev/null || echo "")
           if [ -n "$ECS_IP" ]; then
             echo "[dev]" > /tmp/inventory.ini
-            echo "$ECS_IP ansible_user=root" >> /tmp/inventory.ini
+            echo "$ECS_IP" >> /tmp/inventory.ini
             echo "Using terraform IP: $ECS_IP"
           fi
-          
+
       - name: Checkout deploy-ansible repo
         uses: actions/checkout@v4
         with:
@@ -78,19 +78,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
 
-# 拿不到就 fallback 到 ansible-playbook 里的静态 inventory
       - name: Deploy with Ansible
-        env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
         run: |
-          INVENTORY="/tmp/inventory.ini"
-          if [ ! -f "$INVENTORY" ]; then
-            INVENTORY="github-actions-demo/inventory.ini"
-          else
-            SERVER_HOST=$(sed -n '2p' "$INVENTORY" | awk '{print $1}')
-          fi
-          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts 2>/dev/null
           cd ansible-playbook && \
-          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i "$INVENTORY" github-actions-demo/deploy.yml \
+          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i github-actions-demo/inventory.ini github-actions-demo/deploy.yml \
           -e "env=dev acr_password=${{ secrets.ACR_PASSWORD }}" --private-key ~/.ssh/id_rsa -u root
