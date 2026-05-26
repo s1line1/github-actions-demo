@@ -58,9 +58,9 @@ jobs:
           cd tf-config
           terraform init
           ECS_IPS=$(terraform output -json test_ecs_public_ip 2>/dev/null || echo "")
-          if [ -n "$ECS_IPS" ]; then
+          if [ -n "$ECS_IPS" ] && echo "$ECS_IPS" | jq -e . >/dev/null 2>&1; then
             echo "[dev]" > /tmp/inventory.ini
-            terraform output -json test_ecs_public_ip | jq -r 'if type == "array" then .[] else . end' >> /tmp/inventory.ini
+            echo "$ECS_IPS" | jq -r 'if type == "array" then .[] else . end' >> /tmp/inventory.ini
             echo "Using terraform IPs: $(cat /tmp/inventory.ini)"
           fi
 
