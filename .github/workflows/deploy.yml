@@ -89,6 +89,7 @@ jobs:
           if [ ! -f "$INVENTORY" ]; then
             INVENTORY="github-actions-demo/inventory.ini"
           fi
+          echo "Using inventory: $INVENTORY"
           cd ansible-playbook && \
           ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i $INVENTORY github-actions-demo/deploy.yml \
           -e "env=dev acr_password=${{ secrets.ACR_PASSWORD }}" --private-key ~/.ssh/id_rsa -u root
