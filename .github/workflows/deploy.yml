@@ -57,11 +57,11 @@ jobs:
         run: |
           cd tf-config
           terraform init
-          ECS_IP=$(terraform output -raw test_ecs_public_ip 2>/dev/null || echo "")
-          if [ -n "$ECS_IP" ]; then
+          ECS_IPS=$(terraform output -json test_ecs_public_ip 2>/dev/null || echo "")
+          if [ -n "$ECS_IPS" ]; then
             echo "[dev]" > /tmp/inventory.ini
-            echo "$ECS_IP" >> /tmp/inventory.ini
-            echo "Using terraform IP: $ECS_IP"
+            terraform output -json test_ecs_public_ip | jq -r 'if type == "array" then .[] else . end' >> /tmp/inventory.ini
+            echo "Using terraform IPs: $(cat /tmp/inventory.ini)"
           fi
 
       - name: Checkout deploy-ansible repo
@@ -89,6 +89,7 @@ jobs:
           if [ ! -f "$INVENTORY" ]; then
             INVENTORY="github-actions-demo/inventory.ini"
           fi
+          echo "Using inventory: $INVENTORY"
           cd ansible-playbook && \
           ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i $INVENTORY github-actions-demo/deploy.yml \
           -e "env=dev acr_password=${{ secrets.ACR_PASSWORD }}" --private-key ~/.ssh/id_rsa -u root
