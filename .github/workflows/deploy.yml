@@ -47,6 +47,9 @@ jobs:
           token: ${{ secrets.DEPLOY_REPO_TOKEN }}
           path: tf-config
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Get ECS IP or Fallback
         env:
           ALICLOUD_ACCESS_KEY: ${{ secrets.ALICLOUD_ACCESS_KEY }}
