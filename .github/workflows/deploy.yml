@@ -40,6 +40,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Terraform Config
+        uses: actions/checkout@v4
+        with:
+          repository: s1line1/terraform_demo
+          token: ${{ secrets.DEPLOY_REPO_TOKEN }}
+          path: /tmp/tf
+
+      - name: Get ECS IP or Fallback
+        env:
+          ALICLOUD_ACCESS_KEY: ${{ secrets.ALICLOUD_ACCESS_KEY }}
+          ALICLOUD_SECRET_KEY: ${{ secrets.ALICLOUD_SECRET_KEY }}
+        run: |
+          cd /tmp/tf
+          terraform init
+          ECS_IP=$(terraform output -raw test_ecs_public_ip 2>/dev/null || echo "")
+          if [ -n "$ECS_IP" ]; then
+            echo "[dev]" > /tmp/inventory.ini
+            echo "$ECS_IP" >> /tmp/inventory.ini
+            echo "Using terraform IP: $ECS_IP"
+          fi
+
       - name: Checkout deploy-ansible repo
         uses: actions/checkout@v4
         with:
@@ -61,6 +82,10 @@ jobs:
 
       - name: Deploy with Ansible
         run: |
+          INVENTORY="/tmp/inventory.ini"
+          if [ ! -f "$INVENTORY" ]; then
+            INVENTORY="github-actions-demo/inventory.ini"
+          fi
           cd ansible-playbook && \
-          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i github-actions-demo/inventory.ini github-actions-demo/deploy.yml \
+          ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i $INVENTORY github-actions-demo/deploy.yml \
           -e "env=dev acr_password=${{ secrets.ACR_PASSWORD }}" --private-key ~/.ssh/id_rsa -u root
