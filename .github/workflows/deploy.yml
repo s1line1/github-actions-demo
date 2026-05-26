@@ -45,14 +45,14 @@ jobs:
         with:
           repository: s1line1/terraform_demo
           token: ${{ secrets.DEPLOY_REPO_TOKEN }}
-          path: /tmp/tf
+          path: tf-config
 
       - name: Get ECS IP or Fallback
         env:
           ALICLOUD_ACCESS_KEY: ${{ secrets.ALICLOUD_ACCESS_KEY }}
           ALICLOUD_SECRET_KEY: ${{ secrets.ALICLOUD_SECRET_KEY }}
         run: |
-          cd /tmp/tf
+          cd tf-config
           terraform init
           ECS_IP=$(terraform output -raw test_ecs_public_ip 2>/dev/null || echo "")
           if [ -n "$ECS_IP" ]; then
