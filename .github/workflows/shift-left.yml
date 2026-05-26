@@ -17,7 +17,6 @@ permissions:
 jobs:
   unit_test:
     name: Run Unit Test
-    # if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
