@@ -12,3 +12,4 @@ jobs:
     uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@main
     with:
       acr-name: "test-acr-name"
+      
