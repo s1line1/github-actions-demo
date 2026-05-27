@@ -22,4 +22,5 @@ jobs:
     uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
     with:
       acr-name: "test-acr-name"
+      run_number: ${{ github.event.number }}
 
