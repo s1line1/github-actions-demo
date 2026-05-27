@@ -18,3 +18,11 @@ jobs:
     with:
       acr-name: "test-acr-name"
       run-number: ${{ github.event.number }}
+
+  test-docker-images:
+    needs: test
+    if: needs.test.outputs.has-docker == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "test-docker-images ${{ needs.test.outputs.has-docker }}"
