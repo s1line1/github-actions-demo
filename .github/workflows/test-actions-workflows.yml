@@ -9,7 +9,6 @@ on:
 
 jobs:
   test:
-    uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@main
+    uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
     with:
       acr-name: "test-acr-name"
-      
