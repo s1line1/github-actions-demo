@@ -3,7 +3,7 @@ mvnw.cmd
 mvnw
 target/
 .mvn/*
-.claude/*
+.claude/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
