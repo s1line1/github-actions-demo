@@ -12,7 +12,7 @@ permissions:
   actions: read
 
 jobs:
-  test:
+  shift-left-and-deploy:
     name: Run shift-left and Deploy Workflows
     uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
     with:
@@ -20,9 +20,9 @@ jobs:
       run-number: ${{ github.event.number }}
 
   test-docker-images:
-    needs: test
-    if: needs.test.outputs.has-docker == 'true'
+    needs: shift-left-and-deploy
+    if: needs.shift-left-and-deploy.outputs.has-docker == 'true'
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "test-docker-images ${{ needs.test.outputs.has-docker }}"
+          echo "test-docker-images ${{ needs.shift-left-and-deploy.outputs.has-docker }}"
