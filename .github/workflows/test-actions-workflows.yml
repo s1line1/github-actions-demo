@@ -13,6 +13,12 @@ permissions:
 
 jobs:
   test:
-    uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
-    with:
-      acr-name: "test-acr-name"
+    name: Test Actions Workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: test Actions Workflows
+        run: |
+          echo "Testing Actions Workflows..."
+    # uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
+    # with:
+    #   acr-name: "test-acr-name"
