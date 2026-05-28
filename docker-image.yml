@@ -7,3 +7,4 @@ images:
   - name: Build github-actions-demo image
     dockerfile: Dockerfile
     tag: "ghcr.io/s1line1/github-actions-demo:${{ github.sha }}"
+    
