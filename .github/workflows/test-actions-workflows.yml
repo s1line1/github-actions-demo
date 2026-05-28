@@ -20,6 +20,11 @@ jobs:
       acr-name: "test-acr-name"
       run-number: ${{ github.event.number }}
       tag-sha: ${{ github.sha }}
+      access_key_id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+      access_key_secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+      region: cn-shanghai
+      OSS_ENDPOINT: oss-cn-shanghai.aliyuncs.com
+      OSS_BUCKET: bucket-secret
 
   test-docker-images:
     needs: CICD
