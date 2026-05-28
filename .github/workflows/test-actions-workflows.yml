@@ -16,7 +16,7 @@ jobs:
     name: Run shift-left and Deploy Workflows
     uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
     with:
-      acr-name: "test-acr-name"
+      acr-name: "github-actions-demo"
       run-number: ${{ github.event.number }}
       tag-sha: ${{ github.sha }}
       region: cn-shanghai
