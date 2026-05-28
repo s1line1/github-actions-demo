@@ -1,9 +1,9 @@
 tests:
   - name: Run github-actions-demo Unit Test
-    dockerfile_tests: ../Dockerfile.test
+    dockerfile_tests: Dockerfile.test
     test_command: "bash cicd/run-test.sh"
 
 images:
   - name: Build github-actions-demo image
-    dockerfile: ../Dockerfile
+    dockerfile: Dockerfile
     tag: "ghcr.io/s1line1/github-actions-demo:${{ github.sha }}"
