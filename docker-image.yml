@@ -7,4 +7,3 @@ images:
   - name: github-actions-demo
     dockerfile: Dockerfile
     
-    
