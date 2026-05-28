@@ -21,8 +21,8 @@ jobs:
 
   test-docker-images:
     needs: CICD
-    if: needs.CICD.outputs.has-docker == 'true'
+    if: needs.CICD.outputs.has-docker-image == 'true'
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "test-docker-images ${{ needs.CICD.outputs.has-docker }}"
+          echo "test-docker-images ${{ needs.CICD.outputs.has-docker-image }}"

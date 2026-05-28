@@ -4,7 +4,6 @@ tests:
     test_command: "bash cicd/run-test.sh"
 
 images:
-  - name: Build github-actions-demo image
+  - name: github-actions-demo
     dockerfile: Dockerfile
-    tag: "ghcr.io/s1line1/github-actions-demo:${{ github.sha }}"
     
