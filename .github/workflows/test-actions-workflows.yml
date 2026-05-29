@@ -1,6 +1,6 @@
 name: CI:Test Actions Workflows
 run-name: >-
-  ${{ github.event_name == 'pull_request' && format('PR #{0}  CI Test Actions Workflows', github.event.number) }}
+  ${{ github.event_name == 'pull_request' && format('PR CI Test Actions Workflows') }}
 
 on:
   pull_request:
@@ -9,9 +9,27 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
-  test:
+  CICD:
+    name: Run shift-left and Deploy Workflows
     uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
     with:
-      acr-name: "test-acr-name"
+      acr-name: "github-actions-demo"
+      run-number: ${{ github.event.number }}
+      tag-sha: ${{ github.sha }}
+      OSS_ENDPOINT: oss-cn-shanghai.aliyuncs.com
+      OSS_BUCKET: bucket-secret
+      trigger-event: ${{ github.event_name }}   # 传 "pull_request" 或 "push"
+    secrets:
+      access_key_id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+      access_key_secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+
+  test-docker-images:
+    needs: CICD
+    if: needs.CICD.outputs.has-docker-image == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "test-docker-images ${{ needs.CICD.outputs.has-docker-image }}"
