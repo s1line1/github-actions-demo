@@ -45,7 +45,7 @@ jobs:
   CICD:
     needs: lint
     name: Run shift-left and Deploy Workflows
-    uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
+    uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@main
     with:
       acr-name: "github-actions-demo"
       run-number: ${{ github.event.number || 0 }}
