@@ -19,7 +19,6 @@ jobs:
       acr-name: "github-actions-demo"
       run-number: ${{ github.event.number }}
       tag-sha: ${{ github.sha }}
-      region: cn-shanghai
       OSS_ENDPOINT: oss-cn-shanghai.aliyuncs.com
       OSS_BUCKET: bucket-secret
       trigger-event: ${{ github.event_name }}   # 传 "pull_request" 或 "push"
