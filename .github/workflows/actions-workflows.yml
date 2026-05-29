@@ -42,6 +42,7 @@ jobs:
         if: hashFiles('pom.xml') != ''
 
   CICD:
+    needs: lint
     name: Run shift-left and Deploy Workflows
     uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
     with:
