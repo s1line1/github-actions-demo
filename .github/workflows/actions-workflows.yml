@@ -1,9 +1,12 @@
-name: CI:Test Actions Workflows
+name: CI/CD:Actions Workflows
 run-name: >-
   ${{ github.event_name == 'pull_request' && format('PR CI Test Actions Workflows') }}
 
 on:
   pull_request:
+    branches:
+      - main
+  push:
     branches:
       - main
 
