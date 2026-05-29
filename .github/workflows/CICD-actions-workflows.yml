@@ -54,7 +54,8 @@ jobs:
       OSS_BUCKET: bucket-secret
       trigger-event: ${{ github.event_name }}   # 传 "pull_request" 或 "push"
       DEPLOY_ENV: dev
-      DEPLOY_REPO_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN }}
+      
     secrets:
       ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
       ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+      DEPLOY_REPO_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN }}
