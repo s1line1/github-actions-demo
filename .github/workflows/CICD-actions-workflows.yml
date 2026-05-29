@@ -48,7 +48,7 @@ jobs:
     uses: s1line1/actions-workflows/.github/workflows/shift-left.yml@feature_fix_workflows
     with:
       acr-name: "github-actions-demo"
-      run-number: ${{ github.event.number }}
+      run-number: ${{ github.event.number || 0 }}
       tag-sha: ${{ github.sha }}
       OSS_ENDPOINT: oss-cn-shanghai.aliyuncs.com
       OSS_BUCKET: bucket-secret
