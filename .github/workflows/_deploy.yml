@@ -2,9 +2,10 @@ name: Shift Left -> main, Deploy
 run-name: Deploy ${{github.event.repository.name}} ${{ github.ref_name }} by ${{ github.actor }}
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
 
 env:
   REGION_ID: cn-shanghai
