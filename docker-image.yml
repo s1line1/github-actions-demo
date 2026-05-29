@@ -1,7 +1,7 @@
 tests:
   - name: github-actions-demo
     dockerfile: Dockerfile.test
-    command: "cicd/run-test.sh"
+    command: cicd/run-test.sh
 
 images:
   - name: github-actions-demo
