@@ -4,8 +4,8 @@ run-name: >-
 
 on:
   pull_request:
-    branches:
-      - main
+    # branches:
+    #   - main
 
 # Environment variables available to all jobs and steps in this workflow.
 env:

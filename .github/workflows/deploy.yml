@@ -3,8 +3,8 @@ run-name: Deploy ${{github.event.repository.name}} ${{ github.ref_name }} by ${{
 
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
 
 env:
   REGION_ID: cn-shanghai
