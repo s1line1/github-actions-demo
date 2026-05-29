@@ -6,4 +6,6 @@ tests:
 images:
   - name: github-actions-demo
     dockerfile: Dockerfile
+    registry: crpi-notabmu0yl0rr8sv.cn-shanghai.personal.cr.aliyuncs.com
+    namespace: s1line1-test
     
